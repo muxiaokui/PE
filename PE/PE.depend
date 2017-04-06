@@ -1,0 +1,42 @@
+# depslib dependency file v1.0
+1491379454 source:c:\users\admin\desktop\git\exp\pe\main.cpp
+	<iostream>
+	<data.h>
+	<disk.h>
+	<iomanip>
+
+1491395583 source:c:\users\admin\desktop\git\exp\pe\src\data.cpp
+	"Data.h"
+	"StrType.h"
+
+1491316203 c:\users\admin\desktop\git\exp\pe\include\data.h
+	"StrType.h"
+	<time.h>
+	<cstdlib>
+	<iostream>
+	<algorithm>
+	<cstdio>
+	<ctime>
+
+1491378739 source:c:\users\admin\desktop\git\exp\pe\src\disk.cpp
+	"Disk.h"
+
+1491381592 c:\users\admin\desktop\git\exp\pe\include\disk.h
+	<time.h>
+	<cstdlib>
+	"strType.h"
+	<iostream>
+	<algorithm>
+	<cstdio>
+	<ctime>
+	<power.h>
+
+1491315095 source:c:\users\admin\desktop\git\exp\pe\src\power.cpp
+	"Power.h"
+
+1491315095 c:\users\admin\desktop\git\exp\pe\include\power.h
+	<vector>
+	<algorithm>
+
+1491036360 c:\users\admin\desktop\git\exp\pe\include\strtype.h
+

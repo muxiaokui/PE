@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -22,6 +23,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -32,7 +34,14 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="include/Data.h" />
+		<Unit filename="include/Disk.h" />
+		<Unit filename="include/Power.h" />
+		<Unit filename="include/StrType.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/Data.cpp" />
+		<Unit filename="src/Disk.cpp" />
+		<Unit filename="src/Power.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
