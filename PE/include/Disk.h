@@ -39,10 +39,14 @@ class Disk
 		double push(Pic pic);
 		void CachetoDisk(int pot);
 		double endpush();
+		double disk_pic(Hard * h, Pic p);
 		int nowdisk = 64;
+		int writeopendisk = 0;
+		int rendopendisk =0;
+		double readtime =0;
 	protected:
 	private:
-		int TYPE=0;//0 putong 1 1 2 1+2 3 1+2+3
+		int TYPE=3;//0 putong 1 1 2 1+2 3 1+2+3
 
 };
 

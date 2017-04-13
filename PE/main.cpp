@@ -48,7 +48,7 @@ oo = oo * 24*60*60*0.75;
 	Data data;
     Disk disk;
 	data.filetoproduce();
-	//freopen("ans10.out","w",stdout);
+	freopen("ans13.out","w",stdout);
 
 	for(int i=0;i<MAXPICTURE;i++){
 
@@ -60,12 +60,26 @@ oo = oo * 24*60*60*0.75;
 
     double first = disk.endpush();
     double second =0;
-    cout<<"first stage: "<<setiosflags(ios::fixed)<<first<<endl;
-    for(int i=0;i<MAXPICTURE;i++){
+	double mint=999999,maxt=0,minn=999999,maxn=0,avgt,avgn;
+	double nowt=0,nown=0;
+    cout<<"first stage: "<<setiosflags(ios::fixed)<<first<<"  "<<disk.writeopendisk<<endl;
+
+    for(int i=0;i<3000;i++){
 		data.read_from_in();
 		second=disk.findpic(data.search);
-		cout<<i+1<<"   "<<second<<endl;
+		/*nowt = disk.readtime-nowt;
+		nown = disk.rendopendisk -nown;
+		mint = min(mint,nowt);
+		maxt = max(maxt,nowt );
+		minn = min(minn,nown);
+		maxn = max(maxn,nown);
+		nowt = disk.readtime;
+		nown = disk.rendopendisk;*/
+		cout<<disk.readtime<<"   "<<disk.rendopendisk<<"   "<<second<<endl;
+
     }
+    //cout<<mint <<" "<<maxt<<" "<<disk.readtime/2000<<endl;
+    //cout<<minn <<" "<<maxn<<" "<<disk.rendopendisk/2000.0<<endl;
 
 
     return 0;

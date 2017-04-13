@@ -56,6 +56,8 @@ void Disk::CachetoDisk(int pot) {
 
 			if (pi->vol == MAXVOL) {
 				//nowdisk++;
+				writeopendisk++;
+				power.incost += power.idle_standby+power.standby_active+power.idletoclose;
 				pi->l = new Hard;
 				pi->l->l = NULL;
 				pi->l->r = NULL;
@@ -69,7 +71,7 @@ void Disk::CachetoDisk(int pot) {
 			Hard * pi = area + pot;
 
 			while (pi->vol == MAXVOL) {
-				if (cachedisk.dis[pot][i].x >= pi->l->xl && cachedisk.dis[pot][i].x <= pi->l->xr && cachedisk.dis[pot][i].y >= pi->l->yl && cachedisk.dis[pot][i].y <= pi->l->yr) {
+				if (cachedisk.dis[pot][i].x >= pi->l->xl && cachedisk.dis[pot][i].x < pi->l->xr && cachedisk.dis[pot][i].y >= pi->l->yl && cachedisk.dis[pot][i].y < pi->l->yr) {
 					pi = pi->l;
 				} else {
 					pi = pi->r;
@@ -91,7 +93,8 @@ void Disk::CachetoDisk(int pot) {
 				pi->r->l = NULL;
 				pi->r->l = NULL;
 				//nowdisk += 2;
-
+				writeopendisk+=2;
+				power.incost += 2*(power.idle_standby+power.standby_active+power.idletoclose);
 				if (pi->xr - pi->xl >= (pi->yr - pi->yl) / 2) {
 					pi->l->xl = pi->xl;
 					pi->l->xr = (pi->xl + pi->xr) / 2;
@@ -121,41 +124,44 @@ void Disk::CachetoDisk(int pot) {
 
 double Disk::push(Pic pic) {
 	if (TYPE == 0) {
+			writeopendisk = 25;
 		for (int i = 0; i < MAXDISKNUM; i++) {
 			if (area[i].vol != MAXVOL) {
 				area[i].p.push_back(pic);
 				area[i].vol++;
 
-                power.incost += power.waitsecond*(nowdisk-1)*power.standby;
+               /* power.incost += power.waitsecond*(nowdisk-1)*power.standby;
                 power.incost += power.waitsecond*1*power.idle;
 
                 power.incost += (nowdisk-1)*power.standby;
+               */
                 power.incost += 1*power.active;
+                power.incost += power.waitsecond*power.idle;
 
 				break;
-				//cal()
 			}
 		}
 	} else {
 
 		//int ii = pic.x / 18 + ((int)pic.y / 25) * 20;
 		for (int i = 0; i < MAXDISKNUM; i++) {
-			if (pic.x >= area[i].xl && pic.x <= area[i].xr && pic.y >= area[i].yl && pic.y <= area[i].yr) {
+			if (pic.x >= area[i].xl && pic.x < area[i].xr && pic.y >= area[i].yl && pic.y < area[i].yr) {
 				cachedisk.dis[i].push_back(pic);
 				cachedisk.now++;
 			}
 		}
 
-        power.incost += power.waitsecond*(nowdisk)*power.standby;
-		power.incost += power.waitsecond*1*power.idle;
+        //power.incost += power.waitsecond*(nowdisk)*power.standby;
+		//power.incost += power.waitsecond*1*power.idle;
 
-		power.incost += nowdisk*power.standby;
+		//power.incost += nowdisk*power.standby;
         power.incost += 1*power.active;
+        power.incost += power.waitsecond*power.idle;
 
 		//cout<<cachedisk.now<<endl;
 		if (cachedisk.now >= MAXVOL * 2) {
 			int ma = 0 , man = 0;
-
+			writeopendisk++;
 			for (int i = 0; i < MAXDISKNUM; i++) {
 				if (cachedisk.dis[i].size() > ma) {
 					ma = cachedisk.dis[i].size();
@@ -169,8 +175,8 @@ double Disk::push(Pic pic) {
 			cachedisk.dis[man].clear();
 
 			power.incost+=2*ma*power.active;
-			power.incost-=ma*(power.idle+power.standby);
-			power.incost+=power.standby_active+power.idle_standby;
+			power.incost-=ma*power.idle;
+			power.incost+=power.standby_active+power.idle_standby+power.idletoclose;
 
 		}
 
@@ -186,30 +192,32 @@ double Disk::endpush() {
 			if(area[i].vol!=0){
 				power.incost+=power.idle_standby;
 				power.incost+=power.standby_active;
+				power.incost==power.idletoclose;
 			}
 		}
 
 	}
 
 	if (TYPE != 0) {
-		for (int i = 0; i < MAXDISKNUM; i++) {
+		for (int i = 0; i < MAXDISKNUM; i++){
 			CachetoDisk(i);
+			writeopendisk++;
 			power.incost+=2*area[i].vol*power.active;
-			power.incost-=area[i].vol*(power.idle+power.standby);
-			power.incost+=power.standby_active+power.idle_standby;
+			//power.incost-=area[i].vol*(power.idle+power.standby);
+			power.incost+=power.standby_active+power.idle_standby+power.idletoclose;
 
 		}
-		power.incost+=(nowdisk-MAXDISKNUM)*(power.idle_standby+power.standby_active);
+		//power.incost+=(nowdisk-MAXDISKNUM)*(power.idle_standby+power.standby_active);
 
 	}
 	return power.incost;
 
 }
-double disk_pic(Hard * h, Pic p) {
+double Disk::disk_pic(Hard * h, Pic p) {
 	bool open = false;
 	int ret = 0;
 	double ans =0 ;
-	for (int i = 0; i < h->vol; i++) {
+	for (int i = 0; i < h->p.size(); i++) {
 		if (h->p[i].x <= p.x && h->p[i].x + 1.5 >= p.x &&  h->p[i].y <= p.y && h->p[i].y + 3.0 >= p.y) {
 			ret++;
 		}
@@ -231,8 +239,15 @@ double disk_pic(Hard * h, Pic p) {
 	//	cout<<h->xl<<"  "<<h->xr<<"  "<<h->yl<<"  "<<h->yr<<"  "<<ret<<endl;
 	//}
 
-	if(open)ans+=54+300;//need change
+	if(open){
+		ans+=54+300;//need change
+		ans+=0.75*30;
+		readtime+= 10;
+		readtime += ret;
+		rendopendisk +=1;
+	}
 	ans+=ret*8.0;//need change
+
 
 	return ans;
 }
@@ -240,7 +255,7 @@ double disk_pic(Hard * h, Pic p) {
 
 double Disk::findpic(Pic p) {
     double po=0;
-	for (int i = 0; i < MAXDISKNUM; i++) {
+	for (int i = MAXDISKNUM-1; i >= 0; i--) {
 		po+=disk_pic(area + i, p);
 		if(TYPE==3 && po!=0 ){
 			break;

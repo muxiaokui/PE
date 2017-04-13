@@ -118,8 +118,12 @@ void Data::filetoproduce(){
 void Data::read_from_in(){
 	search.x = produce[now].x;
 	search.y = produce[now].y;
-
 	now++;
+	while(search.x == 360.0 || search.y == 50.0){
+		search.x = produce[now].x;
+		search.y = produce[now].y;
+		now++;
+	}
 	return ;
 
 
